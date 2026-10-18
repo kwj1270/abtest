@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: legacy-server
+
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST:localhost}
+      port: ${SPRING_DATA_REDIS_PORT:6379}
+      database: ${SPRING_DATA_REDIS_DATABASE:0}
+      connect-timeout: 2s
+      timeout: 2s
+
+ab-toggle:
+  redis:
+    key-prefix: ${AB_TOGGLE_REDIS_KEY_PREFIX:ab-toggle:scenario}
+    config-prefix: ${AB_TOGGLE_REDIS_CONFIG_PREFIX:ab-toggle:config}
+
+server:
+  address: 127.0.0.1
+  port: 8080
+
+bank:
+  balance-shadow:
+    enabled: ${BALANCE_SHADOW_ENABLED:false}
+  msa-server:
+    base-url: ${MSA_SERVER_URL:http://127.0.0.1:8081}
+    connect-timeout: ${MSA_CONNECT_TIMEOUT:2s}
+    read-timeout: ${MSA_READ_TIMEOUT:3s}
+
+management:
+  server:
+    address: ${MANAGEMENT_SERVER_ADDRESS:127.0.0.1}
+    port: ${MANAGEMENT_SERVER_PORT:18090}
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true

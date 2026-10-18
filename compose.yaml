@@ -1,0 +1,50 @@
+name: abtest
+services:
+  redis:
+    image: redis:8.2.1-alpine
+    command: redis-server --appendonly yes
+    ports: ["127.0.0.1:6389:6379"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  prometheus:
+    extra_hosts: ["host.docker.internal:host-gateway"]
+    image: prom/prometheus:v3.5.0
+    ports: ["127.0.0.1:19090:9090"]
+    volumes:
+      - ./monitoring/prometheus.yaml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+
+  grafana:
+    image: grafana/grafana:12.1.1
+    ports: ["127.0.0.1:13000:3000"]
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    depends_on: [prometheus]
+
+  k6:
+    extra_hosts: ["host.docker.internal:host-gateway"]
+    image: grafana/k6:1.2.3
+    profiles: [load]
+    environment:
+      BASE_URL: http://host.docker.internal:8080
+      VUS: ${VUS:-10}
+      DURATION: ${DURATION:-2m}
+    volumes:
+      - ./load-test:/scripts:ro
+    command: run /scripts/accounts.js
+
+volumes:
+  redis-data:
+  prometheus-data:
+  grafana-data:

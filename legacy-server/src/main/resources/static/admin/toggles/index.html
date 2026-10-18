@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>토글 설정 · AB Control</title>
+  <link rel="stylesheet" href="/admin/toggles/styles.css">
+  <script src="/admin/toggles/app.js" defer></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="/admin/toggles" aria-label="AB Control 홈"><span class="brand-mark">ab<span>·</span></span> CONTROL</a>
+    <p class="nav-label">WORKSPACE</p>
+    <a class="nav-item" href="/admin/toggles" aria-current="page"><span aria-hidden="true">◫</span> 토글 설정 <span class="nav-arrow" aria-hidden="true">↗</span></a>
+    <div class="sidebar-bottom"><span class="status-dot"></span> DEVELOPMENT<span class="version">v1.0</span></div>
+  </aside>
+  <main>
+    <header class="topbar"><span>워크스페이스 <span class="slash">/</span> 트래픽 관리</span><span class="environment">로컬 관리 도구</span></header>
+    <div class="content">
+      <div class="page-heading"><div><p class="eyebrow">TRAFFIC CONTROL</p><h1>토글 설정<span class="heading-dot">.</span></h1><p class="subtitle">작게 시작하고, 확인하며 전환하세요.</p></div>
+        <button id="refresh" class="button secondary" type="button"><span aria-hidden="true">↻</span> 새로고침</button>
+      </div>
+      <section class="overview" aria-label="설정 요약">
+        <div><span class="overview-label">관리 중인 토글</span><strong id="toggle-count">—</strong><span class="overview-unit">개</span></div>
+        <div><span class="overview-label">기본 신규 비율</span><strong>0<span class="percent-symbol">%</span></strong><span class="overview-note">저장된 설정이 없을 때</span></div>
+        <div class="connection"><span class="overview-label">설정 저장소</span><strong>Redis <span id="connection" class="badge checking">확인 중</span></strong><span id="last-refresh" class="overview-note">현재 설정을 불러오고 있습니다</span></div>
+      </section>
+      <div class="notice"><span class="notice-icon" aria-hidden="true">i</span><p><strong>변경한 비율은 새로 배정되는 사용자에게 적용됩니다.</strong><br>기존 사용자는 최초 경로를 90일간 유지합니다. 설정이 없거나 잘못된 값이면 신규 비율은 0%로 적용됩니다.</p></div>
+      <div class="section-heading"><h2>토글 목록 <span id="list-count" class="count">—</span></h2><span>신규 서버 배정 비율 · 1% 단위</span></div>
+      <div id="global-message" class="global-message" role="status" aria-live="polite"></div>
+      <div id="loading" class="loading" role="status"><span class="spinner" aria-hidden="true"></span> 설정을 불러오는 중…</div>
+      <div id="toggles" class="toggles"></div>
+      <footer><span><span class="footer-mark">ab·</span> 안전한 전환을 위한 작은 조절판</span><span>비율은 요청 수가 아닌 사용자 수를 기준으로 합니다.</span></footer>
+    </div>
+  </main>
+  <template id="toggle-template">
+    <article class="toggle-card">
+      <div class="card-main"><div class="card-icon" aria-hidden="true">⇄</div><div class="card-title"><div class="title-row"><h3></h3><span class="badge usage"></span></div><code class="toggle-key"></code><p class="card-description"></p></div><div class="ratio-display"><strong>0</strong><span>%</span><small>NEW</small></div></div>
+      <form class="ratio-form" novalidate>
+        <div class="allocation"><span class="allocation-legacy">LEGACY <strong class="legacy-percent">100%</strong></span><span class="allocation-new">NEW <strong class="new-percent">0%</strong></span></div>
+        <div class="controls"><input class="ratio-slider" type="range" min="0" max="100" step="1"><div class="number-control"><input class="ratio-number" type="number" min="0" max="100" step="1" inputmode="numeric" required><span aria-hidden="true">%</span></div></div>
+        <div class="scale" aria-hidden="true"><span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span></div>
+        <div class="card-actions"><p class="card-message" role="status" aria-live="polite">현재 설정과 같습니다.</p><div class="action-buttons"><button class="button reset" type="button" disabled>되돌리기</button><button class="button save" type="submit" disabled>변경 저장 <span aria-hidden="true">↗</span></button></div></div>
+      </form>
+    </article>
+  </template>
+</body>
+</html>

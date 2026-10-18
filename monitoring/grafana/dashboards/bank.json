@@ -1,0 +1,730 @@
+{
+  "uid": "bank-ab-toggle",
+  "title": "Bank · AB Toggle",
+  "schemaVersion": 39,
+  "version": 2,
+  "refresh": "5s",
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "섀도우 매칭률 · 선택 기간",
+      "description": "일치 / (일치 + 불일치). 호출 실패·큐 거부 제외. 비교 완료 표본이 없으면 비율을 표시하지 않습니다. 현재 기간에 결과가 없다면 LEGACY 서버의 BALANCE_SHADOW_ENABLED=true와 LEGACY 요청 발생 여부를 확인하세요.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "100 * ((sum(increase(bank_shadow_comparisons_total{result=~\"matched\"}[$__range]))) or vector(0)) / (sum(increase(bank_shadow_comparisons_total{result=~\"matched|mismatched\"}[$__range])) > 0)",
+          "refId": "A",
+          "legendFormat": "",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "noValue": "표본 없음",
+          "decimals": 2,
+          "min": 0,
+          "max": 100
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 6,
+        "h": 5
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none"
+      }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "섀도우 불일치율 · 선택 기간",
+      "description": "불일치 / (일치 + 불일치). 매칭률과 함께 데이터 차이를 확인합니다. 현재 기간에 결과가 없다면 LEGACY 서버의 BALANCE_SHADOW_ENABLED=true와 LEGACY 요청 발생 여부를 확인하세요.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "100 * ((sum(increase(bank_shadow_comparisons_total{result=~\"mismatched\"}[$__range]))) or vector(0)) / (sum(increase(bank_shadow_comparisons_total{result=~\"matched|mismatched\"}[$__range])) > 0)",
+          "refId": "A",
+          "legendFormat": "",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "noValue": "표본 없음",
+          "decimals": 2,
+          "min": 0,
+          "max": 100
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 6,
+        "y": 0,
+        "w": 6,
+        "h": 5
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none"
+      }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "섀도우 호출 실패율 · 선택 기간",
+      "description": "호출 실패 / 전체 종료 결과(일치·불일치·호출 실패·큐 거부). 진행 중인 작업은 제외합니다. 현재 기간에 결과가 없다면 LEGACY 서버의 BALANCE_SHADOW_ENABLED=true와 LEGACY 요청 발생 여부를 확인하세요.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "100 * ((sum(increase(bank_shadow_comparisons_total{result=~\"failed\"}[$__range]))) or vector(0)) / (sum(increase(bank_shadow_comparisons_total{result=~\"matched|mismatched|failed|rejected\"}[$__range])) > 0)",
+          "refId": "A",
+          "legendFormat": "",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "noValue": "표본 없음",
+          "decimals": 2,
+          "min": 0,
+          "max": 100
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 6,
+        "h": 5
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none"
+      }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "섀도우 큐 거부율 · 선택 기간",
+      "description": "큐 거부 / 전체 종료 결과. 실행되지 못한 비교이며 호출 실패와 구분합니다. 현재 기간에 결과가 없다면 LEGACY 서버의 BALANCE_SHADOW_ENABLED=true와 LEGACY 요청 발생 여부를 확인하세요.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "100 * ((sum(increase(bank_shadow_comparisons_total{result=~\"rejected\"}[$__range]))) or vector(0)) / (sum(increase(bank_shadow_comparisons_total{result=~\"matched|mismatched|failed|rejected\"}[$__range])) > 0)",
+          "refId": "A",
+          "legendFormat": "",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "noValue": "표본 없음",
+          "decimals": 2,
+          "min": 0,
+          "max": 100
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 18,
+        "y": 0,
+        "w": 6,
+        "h": 5
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none"
+      }
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "비교 완료 표본 · 선택 기간",
+      "description": "일치 + 불일치의 increase 합계. Prometheus 수집 기반 추정치이며 작은 표본의 높은 매칭률만으로 판단하지 않습니다.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "sum(increase(bank_shadow_comparisons_total{result=~\"matched|mismatched\"}[$__range]))",
+          "refId": "A",
+          "legendFormat": "",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "noValue": "표본 없음",
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 5,
+        "w": 12,
+        "h": 5
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none"
+      }
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "실제 NEW 요청 비중 · 선택 기간",
+      "description": "NEW 경로 선택 / 전체 경로 선택. 고유 사용자 비율이나 Redis에 설정한 목표 비율이 아닙니다.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "100 * (sum(increase(bank_routing_requests_total{route=\"NEW\"}[$__range])) or vector(0)) / (sum(increase(bank_routing_requests_total[$__range])) > 0)",
+          "refId": "A",
+          "legendFormat": "",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "noValue": "표본 없음",
+          "decimals": 2,
+          "min": 0,
+          "max": 100
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 5,
+        "w": 12,
+        "h": 5
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none"
+      }
+    },
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "섀도우 매칭률 추이",
+      "description": "각 수집 구간의 비교 완료 표본 기준 매칭률. 표본이 없는 구간은 비워 둡니다.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "100 * ((sum(increase(bank_shadow_comparisons_total{result=~\"matched\"}[$__rate_interval]))) or vector(0)) / (sum(increase(bank_shadow_comparisons_total{result=~\"matched|mismatched\"}[$__rate_interval])) > 0)",
+          "refId": "A",
+          "legendFormat": "",
+          "instant": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "noValue": "표본 없음",
+          "min": 0,
+          "max": 100
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 10,
+        "w": 12,
+        "h": 8
+      }
+    },
+    {
+      "id": 8,
+      "type": "timeseries",
+      "title": "섀도우 결과별 처리량",
+      "description": "matched=일치, mismatched=불일치, failed=호출 실패, rejected=큐 거부.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "sum by (result) (rate(bank_shadow_comparisons_total[$__rate_interval]))",
+          "refId": "A",
+          "legendFormat": "{{result}}",
+          "instant": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "noValue": "표본 없음"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 10,
+        "w": 12,
+        "h": 8
+      }
+    },
+    {
+      "id": 21,
+      "type": "timeseries",
+      "title": "실제 경로 분배 비율 추이",
+      "description": "각 구간의 경로별 요청 비중. 사용자별 호출량에 따라 목표 사용자 비율과 다를 수 있습니다. 랜덤 신규 사용자가 한 번씩 호출하면 설정 비율과 비교하기 쉽습니다. 요청이 없으면 비워 둡니다.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 18,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "100 * sum by (route) (rate(bank_routing_requests_total[$__rate_interval])) / ignoring(route) group_left() (sum(rate(bank_routing_requests_total[$__rate_interval])) > 0)",
+          "legendFormat": "{{route}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "noValue": "표본 없음"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 9,
+      "type": "timeseries",
+      "title": "경로별 요청/초",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 18,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "sum by (route) (rate(bank_routing_requests_total[$__rate_interval]))",
+          "legendFormat": "{{route}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 10,
+      "type": "timeseries",
+      "title": "HTTP 요청/초 · 계좌 API",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 26,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "sum by (application) (rate(http_server_requests_seconds_count{uri=~\"/accounts.*\"}[$__rate_interval]))",
+          "legendFormat": "{{application}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 11,
+      "type": "timeseries",
+      "title": "HTTP p95 · 계좌 API",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 26,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (le, application) (rate(http_server_requests_seconds_bucket{uri=~\"/accounts.*\"}[$__rate_interval])))",
+          "legendFormat": "{{application}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 12,
+      "type": "timeseries",
+      "title": "HTTP 5xx/초 · 계좌 API",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 34,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "sum by (application) (rate(http_server_requests_seconds_count{uri=~\"/accounts.*\",status=~\"5..\"}[$__rate_interval])) or (0 * sum by (application) (rate(http_server_requests_seconds_count{uri=~\"/accounts.*\"}[$__rate_interval])))",
+          "legendFormat": "{{application}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 13,
+      "type": "timeseries",
+      "title": "최근 5분 경로 선택 건수",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 34,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "sum by (route) (increase(bank_routing_requests_total[5m]))",
+          "legendFormat": "{{route}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 14,
+      "type": "timeseries",
+      "title": "섀도우 비교 누적 건수",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 42,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "sum by (result) (bank_shadow_comparisons_total)",
+          "legendFormat": "{{result}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 15,
+      "type": "timeseries",
+      "title": "경로 선택 누적 건수 (서버 재시작 시 초기화)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 42,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "sum by (route) (bank_routing_requests_total)",
+          "legendFormat": "{{route}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 16,
+      "type": "timeseries",
+      "title": "Prometheus 수집 상태 · 1 정상",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 50,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "up{job=\"bank-servers\"}",
+          "legendFormat": "{{instance}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 17,
+      "type": "timeseries",
+      "title": "HTTP 5xx 비율 · 계좌 API",
+      "description": "서버별 계좌 API의 5xx / 전체 HTTP 요청. 4xx 업무 오류는 제외합니다.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "100 * ((sum by (application) (rate(http_server_requests_seconds_count{uri=~\"/accounts.*\",status=~\"5..\"}[$__rate_interval]))) or (0 * sum by (application) (rate(http_server_requests_seconds_count{uri=~\"/accounts.*\"}[$__rate_interval])))) / (sum by (application) (rate(http_server_requests_seconds_count{uri=~\"/accounts.*\"}[$__rate_interval])) > 0)",
+          "refId": "A",
+          "legendFormat": "{{application}}",
+          "instant": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "noValue": "표본 없음",
+          "min": 0,
+          "max": 100
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 50,
+        "w": 12,
+        "h": 8
+      }
+    },
+    {
+      "id": 18,
+      "type": "timeseries",
+      "title": "HTTP p99 · 계좌 API",
+      "description": "장시간 지연 요청을 p95와 함께 확인합니다. 표본이 적을 때는 변동이 큽니다.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.99, sum by (le, application) (rate(http_server_requests_seconds_bucket{uri=~\"/accounts.*\"}[$__rate_interval])))",
+          "refId": "A",
+          "legendFormat": "{{application}}",
+          "instant": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "noValue": "표본 없음"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 58,
+        "w": 12,
+        "h": 8
+      }
+    },
+    {
+      "id": 19,
+      "type": "timeseries",
+      "title": "JVM CPU 사용률",
+      "description": "JVM 프로세스 CPU 사용률.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "100 * max by (application) (process_cpu_usage)",
+          "refId": "A",
+          "legendFormat": "{{application}}",
+          "instant": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "noValue": "표본 없음",
+          "min": 0,
+          "max": 100
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 58,
+        "w": 12,
+        "h": 8
+      }
+    },
+    {
+      "id": 20,
+      "type": "timeseries",
+      "title": "JVM Heap 사용량",
+      "description": "부하 증가 시 서버별 Heap 추이를 확인합니다.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "sum by (application) (jvm_memory_used_bytes{area=\"heap\"})",
+          "refId": "A",
+          "legendFormat": "{{application}}",
+          "instant": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "noValue": "표본 없음"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 66,
+        "w": 12,
+        "h": 8
+      }
+    }
+  ],
+  "description": "사용자 경로 전환과 섀도우 비교 품질·실패·부하를 함께 확인합니다. 상단 지표는 선택 기간, 추이는 자동 수집 구간 기준입니다."
+}

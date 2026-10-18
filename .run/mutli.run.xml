@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="mutli" type="CompoundRunConfigurationType">
+    <toRun name="LegacyServerApplication" type="SpringBootApplicationConfigurationType" />
+    <toRun name="MsaServerApplication" type="SpringBootApplicationConfigurationType" />
+    <method v="2" />
+  </configuration>
+</component>
